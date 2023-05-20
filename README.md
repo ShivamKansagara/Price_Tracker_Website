@@ -1,3 +1,3 @@
 # Price_Tracker_Website
 
-this is our Summer research internship project
+This is our Summer Research Internship Project
