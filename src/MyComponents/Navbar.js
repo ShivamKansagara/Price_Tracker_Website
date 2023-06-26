@@ -1,7 +1,6 @@
 import React from 'react'
 import "./Underlinecomp.css"
 import { Route,Routes,Link } from 'react-router-dom';
-import About from './About';
 export default function Navbar() {
     let backnavcolor={
         backgroundColor: "#000000"
@@ -37,8 +36,8 @@ export default function Navbar() {
         </li>
       </ul>
       <form className="d-flex" role="search">
-        <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search"/>
-        <button className="btn btn-outline-info bg-light text-dark " type="submit">Search</button>
+        <Link to="/ShowProducts"><button className="btn btn-outline-info bg-light text-dark " type="submit">Click here to Search</button></Link>
+        
       </form>
     </div>
   </div>
