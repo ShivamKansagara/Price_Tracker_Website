@@ -5,6 +5,7 @@ import Navbar from './MyComponents/Navbar';
 import Carousel from './MyComponents/Carousel';
 import Accordion from './MyComponents/Accordion';
 import About from './MyComponents/About';
+import ShowCard from './MyComponents/ShowCard';
 
 function App() {
   return (
@@ -12,7 +13,7 @@ function App() {
     <div >
     <Navbar/>
     <Routes>
-    <Route path="/" element={
+    <Route exact path="/" element={
       <div>
               <div style={{ backgroundColor: '#000000' }}>
               <Carousel />
@@ -22,8 +23,9 @@ function App() {
               </div>
       </div>
             
-          } />
+    } />
       <Route exact path="/about" element={<About/>} />
+      <Route exact path="/ShowProducts" element={<ShowCard/>}/>
     </Routes>
     </div>
     </>
