@@ -1,0 +1,9 @@
+.underline-on-hover {
+    text-decoration: none;
+    transition: text-decoration 0.3s;
+    cursor: pointer;
+  }
+  
+  .underline-on-hover:hover {
+    text-decoration: underline;
+  }
