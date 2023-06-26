@@ -48,7 +48,7 @@ export default function Carousel() {
     // </div>
     // </div>
     <div>
-         <div id="myCarousel" className="carousel slide" data-bs-ride="carousel" style={{ height: "500px" }}>
+         <div id="myCarousel" className="carousel slide" data-bs-ride="carousel" data-bs-interval="2000" style={{ height: "500px" , backgroundColor: '#000000' }}>
       {/* <ol className="carousel-indicators">
         <li data-bs-target="#myCarousel" data-bs-slide-to="0" className="active"></li>
         <li data-bs-target="#myCarousel" data-bs-slide-to="1"></li>
@@ -56,7 +56,7 @@ export default function Carousel() {
       </ol> */}
       <div className="carousel-inner">
         <div className="carousel-item active">
-          <img src={image1} className="d-block w-100" alt="First slide" style={{ maxHeight: "500px",filter: 'blur(6px)' }} />
+          <img src={image1} className="d-block w-100" alt="First slide" style={{ maxHeight: "500px",filter: 'blur(3px)' }} />
           <div className="container">
             <div className="carousel-caption text-start">
               <h1>Example headline.</h1>
