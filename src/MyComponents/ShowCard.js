@@ -1,7 +1,7 @@
 import React from 'react'
 import "./Card.css"
 import axios from 'axios';
-// import Searchbar from "./Searchbar"
+import Searchbar from "./Searchbar"
 export default function ShowCard() {
   const products = [
     {
@@ -242,7 +242,7 @@ export default function ShowCard() {
   };
   return (
     <>
-    {/* <Searchbar></Searchbar> */}
+    <div className="container"><Searchbar></Searchbar></div>
     <div className="container">
   <div className="row">
     {products.map((product) => (
@@ -269,7 +269,7 @@ export default function ShowCard() {
         <div className="card-attribute">
           <img src="https://i.postimg.cc/SQBzNQf1/image-avatar.png" alt="avatar" className="small-avatar" />
           
-          <button className='btn btn-dark' onClick={() => handleClick(product.link)}>click me</button>
+          <button className='btn btn-danger' onClick={() => handleClick(product.link)}>click me</button>
           <p></p>
         </div>
       </div>
