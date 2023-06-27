@@ -18,6 +18,7 @@ function App() {
               <div style={{ backgroundColor: '#000000' }}>
               <Carousel />
               </div>
+              
               <div style={{ backgroundColor: '#FFFF00' }}>
               <Accordion />
               </div>
