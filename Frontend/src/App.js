@@ -12,7 +12,6 @@ function App() {
     <>
     <div >
     <Navbar/> 
-    //ndv jds d vdd kv
     <Routes>
     <Route exact path="/" element={
       <div>
