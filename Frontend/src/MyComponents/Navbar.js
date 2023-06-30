@@ -9,9 +9,9 @@ export default function Navbar() {
     <>
     
     <div >
-        <nav className="navbar sticky-top navbar-expand-lg " style={backnavcolor}>
+        <nav className="navbar fixed-top navbar-expand-lg " style={backnavcolor}>
   <div className="container-fluid">
-    <Link className="navbar-brand text-light underline-on-hover text-dark" to="/">Navbar</Link>
+    <Link className="navbar-brand text-light underline-on-hover text-dark"  to="/">PriceHub</Link>
     <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span className="navbar-toggler-icon"></span>
     </button>

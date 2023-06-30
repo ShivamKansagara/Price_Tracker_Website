@@ -146,13 +146,10 @@ exports.search_electronics = async (req, res) => {
   
       const { productName } = req.body;
       console.log(productName);
-      console.log("shivam");
       // Check if the productName is provided
       if (!productName) {
-        console.log("vyom");
         return res.status(400).send({ message: "Product name is required" });
       }
-      console.log("kansagara");
       // Scrape Amazon and Flipkart
       const amazonResults = await scrapeAmazon(productName);
       const flipkartResults = await scrapeFlipkart(productName);
