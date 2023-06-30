@@ -8,7 +8,7 @@ const Footer = () => {
           <div className="container">
             <div className="row">
               <div className="col-lg-3 col-md-6 footer-contact">
-                <h3>Arsha</h3>
+                <h3>Pricehub</h3>
                 <p>
                   A108 Adam Street <br />
                   New York, NY 535022<br />
@@ -23,7 +23,7 @@ const Footer = () => {
                   <li><i className="bx bx-chevron-right"></i> <a href="#">Home</a></li>
                   <li><i className="bx bx-chevron-right"></i> <a href="#">About us</a></li>
                   <li><i className="bx bx-chevron-right"></i> <a href="#">Services</a></li>
-                  <li><i className="bx bx-chevron-right"></i> <a href="#">Terms of service</a></li>
+                  <li><i className="bx bx-chevron-right"></i> <a href="#">Contact Us</a></li>
                   <li><i className="bx bx-chevron-right"></i> <a href="#">Privacy policy</a></li>
                 </ul>
               </div>
@@ -57,7 +57,7 @@ const Footer = () => {
       <div className='tempcolor'>
       <div className="container footer-bottom clearfix ">
           <div className="copyright text-dark">
-            &copy; Copyright <strong><span className='text-dark'>Arsha</span></strong>. All Rights Reserved
+            &copy; Copyright <strong><span className='text-dark'>PriceHub</span></strong>. All Rights Reserved
           </div>
           <div className="credits text-dark">
             Designed by Shivam Kansagara

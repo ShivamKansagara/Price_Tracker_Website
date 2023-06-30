@@ -5,8 +5,7 @@ export default function Error() {
   <h1 className="display-1">
     4<span><i className="fas fa-ghost"></i></span>4
   </h1>
-  <h2>Error: 404 page not found</h2>
-  <p>Sorry, the page you're looking for cannot be accessed</p>
+  <h1>Product not found</h1>
 </div>
   )
 }

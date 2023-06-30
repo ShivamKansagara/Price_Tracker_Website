@@ -24,7 +24,7 @@ export default function Searchbar({ handleInputChange, handleDropdownSelect, fet
         <div>
           <div className={`dropdown ${isOpen ? "show" : ""} `}>
             <button
-              className="btn btn-secondary dropdown-toggle bg-dark text-light"
+              className="btn btn-secondary dropdown-toggle bg-light text-dark"
               type="button"
               onClick={toggleDropdown}
               id="dropdownButton"
