@@ -326,8 +326,10 @@ if (product) {
     reviews.push(reviewText);
   }
 
-  product.reviews = reviews[0];
-  productReviews.push(product);
+  if (reviews && reviews.length > 0) {
+    product.reviews = reviews[0];
+    productReviews.push(product);
+  }
 
   await productPage.close();
 }
@@ -364,7 +366,7 @@ await browser.close();
 
   // Filter and display the scraped data
   const filteredData = productReviews
-    .filter((result) => result !==null) // Filter out products without reviews
+    .filter((result) => review.length>0) // Filter out products without reviews
     .filter((result, index, self) => {
       const isDuplicate = self.findIndex((r) => r.name === result.name) !== index;
       return !isDuplicate;
