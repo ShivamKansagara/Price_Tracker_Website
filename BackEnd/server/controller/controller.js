@@ -139,7 +139,109 @@ app.use(express.json());
   
 //   }
 
+// async function scrapeAmazon(productName, category) {
+//   const browser = await puppeteer.launch();
+//   const page = await browser.newPage();
+//   console.log(productName);
+//   // Navigate to the Amazon search results page
+//   await page.goto(
+//     `https://www.amazon.in/s?k=${encodeURIComponent(productName)}`
+//   );
+
+//   // Wait for the search results to load
+//   await page.waitForSelector(".sg-col-inner");
+
+//   const productElements = await page.$$(".sg-col-inner");
+
+//   // Define category-specific CSS selectors
+//   const categorySelectors = {
+//     electronics: {
+//       name: ".a-size-medium.a-color-base.a-text-normal",
+//     },
+//     fashion: {
+//       company: ".a-size-base-plus.a-color-base",
+//       tshirtName: ".a-size-base-plus.a-color-base.a-text-normal",
+//     },
+//   };
+
+//   const selectors = categorySelectors[category];
+
+//   // Extract the product information
+//   const amazonResults = await Promise.all(
+//     productElements.map(async (el) => {
+//       let nameElement;
+//       let name = "";
+
+//       if (category === "electronics") {
+//         nameElement = await el.$(selectors.name);
+//         name = nameElement
+//           ? await page.evaluate((element) => element.textContent, nameElement)
+//           : "";
+//       } else if (category === "fashion") {
+//         const companyElement = await el.$(selectors.company);
+//         const tshirtNameElement = await el.$(selectors.tshirtName);
+
+//         const company = companyElement
+//           ? await page.evaluate((element) => element.textContent, companyElement)
+//           : "";
+//         const tshirtName = tshirtNameElement
+//           ? await page.evaluate((element) => element.textContent, tshirtNameElement)
+//           : "";
+
+//         name = `${company} ${tshirtName}`;
+//       }
+
+//       const priceElement = await el.$(".a-price-whole");
+//       const price = priceElement
+//         ? await page.evaluate(
+//             (element) =>
+//               parseInt(element.textContent.replace(/[^0-9]/g, ""), 10),
+//             priceElement
+//           )
+//         : 0;
+
+//       const linkElement = await el.$(".a-link-normal.a-text-normal");
+//       const link = linkElement
+//         ? await page.evaluate((element) => element.href, linkElement)
+//         : "";
+
+//       const imageElement = await el.$(".s-image");
+//       const image = imageElement
+//         ? await page.evaluate((element) => element.src, imageElement)
+//         : "";
+
+//       const reviewsElement = await el.$(".a-icon-alt");
+//       const reviews = reviewsElement
+//         ? await page.evaluate((element) => element.textContent, reviewsElement)
+//         : "";
+
+//       // Check if the product name contains the provided search keyword (case-insensitive)
+//       const keyword = new RegExp(productName, "i");
+//       if (keyword.test(name) && isWordUnique(name)) {
+//         return { name, price, link, image, reviews };
+//       }
+
+//       return null; // Return null for non-matching results
+//     })
+//   );
+
+//   await browser.close();
+
+//   // Filter out null results (non-matching)
+//   const filteredData = amazonResults
+//     .filter((result) => result !== null) // Filter out null results
+//     .filter((result, index, self) => {
+//       const isDuplicate =
+//         self.findIndex((r) => r.name === result.name) !== index;
+//       return !isDuplicate;
+//     });
+
+//   console.log(filteredData);
+//   return filteredData;
+// }
+
 function isWordUnique(str) {
+  if(str.length==0) return false;
   const words = str.toLowerCase().split(/\W+/); // Split the string into an array of words
   const wordCount = {};
 
@@ -166,7 +268,7 @@ async function scrapeAmazon(productName, category) {
   await page.goto(
     `https://www.amazon.in/s?k=${encodeURIComponent(productName)}`
   );
-
+  //console.log(productName)
   // Wait for the search results to load
   await page.waitForSelector(".sg-col-inner");
 
@@ -233,10 +335,10 @@ async function scrapeAmazon(productName, category) {
       const reviews = reviewsElement
         ? await page.evaluate((element) => element.textContent, reviewsElement)
         : "";
-
+          //console.log(name)
       // Check if the product name contains the provided search keyword (case-insensitive)
       const keyword = new RegExp(productName, "i");
-      if (keyword.test(name) && isWordUnique(name)) {
+      if (isWordUnique(name)) {
         return { name, price, link, image, reviews };
       }
 
@@ -257,110 +359,6 @@ async function scrapeAmazon(productName, category) {
 
   console.log(filteredData);
   return filteredData;
-}
-
-async function scrapeAmazon(productName, category) {
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
-
-  // Navigate to the Amazon search results page
-  await page.goto(
-    `https://www.amazon.in/s?k=${encodeURIComponent(productName)}`
-  );
-
-  // Wait for the search results to load
-  await page.waitForSelector(".sg-col-inner");
-
-  const productElements = await page.$$(".sg-col-inner");
-
-  // Define category-specific CSS selectors
-//   const categorySelectors = {
-//     electronics: ".a-size-medium.a-color-base.a-text-normal",
-//     fashion: ".sg-col-inner"
-//   };
-
-  //const selectors = categorySelectors[category];
-
-  // Extract the product information
-  
-  const amazonResults = await Promise.all(
-    productElements.map(async (el) => {
-      let nameElement;
-      let name = "";
-
-      if (category === "electronics") {
-        nameElement = await el.$(".a-size-medium.a-color-base.a-text-normal");
-        name = nameElement
-          ? await page.evaluate((element) => element.textContent, nameElement)
-          : "";
-      } else if (category === "fashion") {
-        const companyElement = await el.$(".a-size-base-plus.a-color-base");
-        const tshirtNameElement = await el.$(".a-size-base-plus.a-color-base.a-text-normal");
-
-        const company = companyElement
-          ? await page.evaluate((element) => element.textContent, companyElement)
-          : "";
-        const tshirtName = tshirtNameElement
-          ? await page.evaluate((element) => element.textContent, tshirtNameElement)
-          : "";
-
-        name = `${company} ${tshirtName}`;
-      }
-
-      const priceElement = await el.$(".a-price-whole");
-      const price = priceElement
-        ? await page.evaluate(
-            (element) =>
-              parseInt(element.textContent.replace(/[^0-9]/g, ""), 10),
-            priceElement
-          )
-        : 0;
-
-      const linkElement = await el.$(".a-link-normal.a-text-normal");
-      const link = linkElement
-        ? await page.evaluate((element) => element.href, linkElement)
-        : "";
-
-      const imageElement = await el.$(".s-image");
-      const image = imageElement
-        ? await page.evaluate((element) => element.src, imageElement)
-        : "";
-
-        const reviewsElement = await el.$(".a-icon-alt");
-      const reviews = reviewsElement
-        ? await page.evaluate((element) => element.textContent, reviewsElement)
-        : "";
-
-      // Check if the product name contains the provided search keyword (case-insensitive)
-      const keyword = new RegExp(productName, "i");
-      if (keyword.test(name)) {
-        return { name, price, link, image, reviews };
-      }
-
-      return null; // Return null for non-matching results
-    })
-  );
-
-  await browser.close();
-
-  // Filter out null results (non-matching)
-  const filteredData = amazonResults
-    .filter((result) => result !== null) // Filter out null results
-    .filter((result, index, self) => {
-      const isDuplicate =
-        self.findIndex((r) => r.name === result.name) !== index;
-      return !isDuplicate;
-    });
-
-    filteredData.forEach((result) => {
-        console.log("Name:", result.name);
-        console.log("Price:", result.price);
-        console.log("Reviews:", result.reviews);
-        console.log("Link:", result.link);
-        console.log("Image:", result.image);
-        console.log("--------------------------");
-      });
-    return filteredData;
 }
 
 async function scrapeFlipkart(productName, category) {
@@ -512,11 +510,16 @@ exports.search_electronics = async (req, res) => {
         //console.log("vyom");
         return res.status(400).send({ message: "Product name is required" });
       }
+
+    const isWhitespace = /^\s*$/.test(productName);
+    if (isWhitespace) {
+      return res.status(400).send({ message: "Product name is required" });
+    }
       //console.log("kansagara");
       // Scrape Amazon and Flipkart
-      const flipkartResults = await scrapeFlipkart(productName,category);
       const amazonResults = await scrapeAmazon(productName,category);
-
+      const flipkartResults = await scrapeFlipkart(productName,category);
+      
       // Merge and sort the results by price
       const results = [...amazonResults, ...flipkartResults].sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
   
