@@ -32,7 +32,9 @@ function App() {
       <Route exact path="/about" element={<About/>} />
       <Route exact path="/ShowProducts" element={<ShowCard/>}/>
     </Routes>
+    <footer>
     <Footer/>
+    </footer>
     </div>
     </>
   );

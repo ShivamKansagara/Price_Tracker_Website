@@ -366,7 +366,7 @@ await browser.close();
 
   // Filter and display the scraped data
   const filteredData = productReviews
-    .filter((result) => review.length>0) // Filter out products without reviews
+    .filter((result) => result.reviews.length>0) // Filter out products without reviews
     .filter((result, index, self) => {
       const isDuplicate = self.findIndex((r) => r.name === result.name) !== index;
       return !isDuplicate;
@@ -402,7 +402,11 @@ exports.search_electronics = async (req, res) => {
   
       // Store the results in the database
       //await electronics.insertMany(results);
+      if (results.length === 0) {
+        return res.status(200).send({message:"Not found"});
+      }
       res.status(200).json(results);
+
     } 
     catch (error) {
       console.error(error);

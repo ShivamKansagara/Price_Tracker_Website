@@ -18,6 +18,8 @@ export default function Searchbar({ handleInputChange, handleDropdownSelect, fet
   return (
     <>
     <br />
+    <br />
+    <br />
       <div className="container d-flex justify-content-center align-items-center">
         <div>
           <div className={`dropdown ${isOpen ? "show" : ""} `}>
@@ -30,8 +32,8 @@ export default function Searchbar({ handleInputChange, handleDropdownSelect, fet
               {selectedItem ? selectedItem : 'Category'}
             </button>
             <ul className={`dropdown-menu ${isOpen ? "show" : ""}`}>
-              <li><a className="dropdown-item" href="#" onClick={() => handleItemClick('Action')}>Action</a></li>
-              <li><a className="dropdown-item" href="#" onClick={() => handleItemClick('Another action')}>Another action</a></li>
+              <li><a className="dropdown-item" href="#" onClick={() => handleItemClick('electronics')}>Electronics</a></li>
+              <li><a className="dropdown-item" href="#" onClick={() => handleItemClick('fashion')}>Fashion</a></li>
               <li><a className="dropdown-item" href="#" onClick={() => handleItemClick('Something else here')}>Something else here</a></li>
             </ul>
           </div>
@@ -62,7 +64,8 @@ export default function Searchbar({ handleInputChange, handleDropdownSelect, fet
         </div>
       </div>
 
-      <hr className='hr hr-blurry' />
+      <br/>
+      <br />
     </>
   );
 }

@@ -6,12 +6,7 @@ import image3 from "../Images/image3.jpg";
 export default function Carousel() {
   return (
     <div>
-         <div id="myCarousel" className="carousel slide" data-bs-ride="carousel" data-bs-interval="2000" style={{ height: "500px" , backgroundColor: '#000000' }}>
-      {/* <ol className="carousel-indicators">
-        <li data-bs-target="#myCarousel" data-bs-slide-to="0" className="active"></li>
-        <li data-bs-target="#myCarousel" data-bs-slide-to="1"></li>
-        <li data-bs-target="#myCarousel" data-bs-slide-to="2"></li>
-      </ol> */}
+         <div id="myCarousel" className="carousel slide" data-bs-ride="carousel" style={{ height: "500px" }}>
       <div className="carousel-inner">
         <div className="carousel-item active">
           <img src={image1} className="d-block w-100" alt="First slide" style={{ maxHeight: "500px" }} />

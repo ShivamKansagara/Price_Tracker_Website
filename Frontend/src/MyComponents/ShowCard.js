@@ -3,6 +3,7 @@ import axios from 'axios';
 import "./Card.css";
 import Searchbar from "./Searchbar";
 import Loading from './Loadingpage';
+import Error from './Error';
 import price_logo from "../Images/price_logo.jpg";
 import flipkart_avatar from "../Images/Flipkart_avatar.png";
 import amazon_avatar from "../Images/Amazon.webp";
@@ -13,6 +14,7 @@ export default function ShowCard() {
   const [inputString, setInputString] = useState('');
   const [selectedDropdownItem, setSelectedDropdownItem] = useState('');
   const [loading, setLoading] = useState(true);
+  const [isError, setError] = useState(false);
 
   const handleInputChange = (event) => {
     setInputString(event.target.value);
@@ -25,17 +27,27 @@ export default function ShowCard() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      // console.log(inputString);
-      // console.log(selectedDropdownItem);
       const response = await axios.post('http://localhost:5000/api/electronics', {
         productName: inputString,
         category: selectedDropdownItem,
       });
-      setData(response.data);
       setLoading(false);
+  
+      if (Array.isArray(response.data)) {
+        setData(response.data);
+        setError(false);
+      } else if (response.data === "Not found") {
+        setError(true);
+        setData([]);
+      } else {
+        setError(true);
+        setData([]);
+        console.error('Invalid response data:', response.data);
+      }
     } catch (error) {
       console.error('Error fetching data:', error);
       setLoading(false);
+      setData([]);
     }
   };
 
@@ -54,6 +66,7 @@ export default function ShowCard() {
       </div>
       <div className="container">
         {loading ? (<Loading />) : (
+          isError===true ? (<Error/>) : 
           <div className="row">
             {data.map((product) => {
               const isFlipkart = product.link.includes('flipkart');
