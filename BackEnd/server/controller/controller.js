@@ -3,7 +3,7 @@ const puppeteer = require('puppeteer');
 const mongoose = require('mongoose');
 
 var electronics = require('../models/model_electonics')
-// var organizerdb = require('../model/model_organizer')
+var userdb = require('../models/model_user')
 // var trackdb = require('../model/model_track')
 // var homedb = require('../model/model_home')
 // var teamdb = require('../model/model_team')
@@ -11,12 +11,15 @@ var electronics = require('../models/model_electonics')
 // var uvtrackdb = require('../model/model_uvtrack')
 // var admindb = require('../model/model_admin')
 //const axios = require("axios");
-// const bcrypt = require('bcrypt');S
+const bcrypt = require('bcrypt');
+const jwt = require("jsonwebtoken")
 
 
 // Initialize Express app
-const app = express();
-app.use(express.json());
+// const app = express();
+// app.use(express.json());
+
+
 
 // Scrape Amazon
 
@@ -574,3 +577,66 @@ exports.search_electronics = async (req, res) => {
 //     res.status(500).json({ error: 'An error occurred' });
 //   }
 // };
+
+exports.register = async (req,res) => {
+  try {
+    if(!req.body){
+      return res.status(400).send({message : "Content cannot be empty"});
+    }
+    const {username , password, email} = req.body;
+
+    const exist_user = await userdb.findOne({username : username});
+    if(exist_user){
+       return res.status(400).send({message : "Username already exist"});
+    }
+
+    const exist_email = await userdb.findOne({email : email});
+    if(exist_email){
+       return res.status(400).send({message : "Email already exist"});
+    }
+
+    const user = new userdb(req.body)
+    await user.save(user)
+    .then(async data=>{res.status(200).send(data)});
+  } catch (error) {
+    return res.status(500).send({message : "Internal server error"})
+  }
+}
+
+exports.login = async (req, res) => {
+  try {
+      if (!req.body) {
+          return res.status(400).send({ message: "Content can not be empty" });
+      }
+
+      const {username,password} = req.body
+
+      // check if user exists
+      const user = await userdb.findOne({ username: username });
+
+
+      // console.log(username_,password_)
+      if (!user) return res.status(400).send({ message: "User not found" });
+
+      // check if password is correct
+      const validPassword = await bcrypt.compare(password, user.password);
+      if (!validPassword) return res.status(400).send({ message: "Invalid Password" });
+
+      // create and assign a token
+      let tokenData = {
+          username: user.username
+      };
+
+      const token = await jwt.sign(tokenData, "secret", { expiresIn: "1h" });
+      //console.log("token created");
+
+      res.status(200).json({
+          status: true,
+          success: "SendData",
+          token: token,
+      })
+
+  } catch (err) {
+      return res.status(500).send({ message: "error" });
+  }
+}
