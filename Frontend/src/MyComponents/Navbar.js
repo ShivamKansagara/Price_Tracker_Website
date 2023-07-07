@@ -1,10 +1,36 @@
 import React from "react";
 import "./Underlinecomp.css";
 import { Route, Routes, Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 export default function Navbar() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    // Check the user's login status here (e.g., by verifying the token)
+    const token = localStorage.getItem("token"); // Assuming the token is stored in localStorage
+    if (token) {
+      setIsLoggedIn(true);
+    } else {
+      setIsLoggedIn(false);
+    }
+  }, []);
+
+  const handleLogout = () => {
+    // Perform logout logic here (e.g., clearing the token and redirecting to the login page)
+    localStorage.removeItem("token"); // Assuming the token is stored in localStorage
+    setIsLoggedIn(false);
+    // Redirect to the login page
+    // navigate("/Login_SignUp"); // Uncomment this line if you are using react-router-dom's useNavigate hook
+    window.location.href = "/"; // Use this line if you want to redirect without react-router-dom
+  };
+
   let backnavcolor = {
     backgroundColor: "#c5d5cb",
   };
+
+  const navigate = useNavigate();
+
   return (
     <>
       <div>
@@ -93,23 +119,42 @@ export default function Navbar() {
                   </ul>
                 </li>
                 <form className="d-flex mr-3" role="search">
-                  <Link to="/ShowProducts">
-                    <button className="btn btn-dark" type="submit">
-                      Click here to Search
-                    </button>
-                  </Link>
+                  {isLoggedIn ? (
+                    <Link to="/ShowProducts">
+                      <button className="btn btn-dark" type="submit">
+                        Click here to Search
+                      </button>
+                    </Link>
+                  ) : (
+                    <Link to="/Login_SignUp">
+                      <button
+                        className="btn btn-dark"
+                        onClick={() => {
+                          window.alert("LOGIN to search");
+                        }}
+                      >
+                        Click here to Search
+                      </button>
+                    </Link>
+                  )}
                 </form>
               </ul>
 
               <ul className="navbar-nav mr-3 mb-2 mb-lg-0">
                 <li className="nav-item d-flex">
-                  <Link
-                    className="nav-link active text-dark"
-                    aria-current="page"
-                    to="/Login_SignUp"
-                  >
-                    <button className="btn btn-primary">Login/SignUp</button>
-                  </Link>
+                  {isLoggedIn ? (
+                    <button className="btn btn-primary" onClick={handleLogout}>
+                      LogOut
+                    </button>
+                  ) : (
+                    <Link
+                      className="nav-link active text-dark"
+                      aria-current="page"
+                      to="/Login_SignUp"
+                    >
+                      <button className="btn btn-primary">Login/SignUp</button>
+                    </Link>
+                  )}
                 </li>
               </ul>
             </div>

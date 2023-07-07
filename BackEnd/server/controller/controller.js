@@ -1,9 +1,9 @@
-const express = require('express');
-const puppeteer = require('puppeteer');
-const mongoose = require('mongoose');
+const express = require("express");
+const puppeteer = require("puppeteer");
+const mongoose = require("mongoose");
 
-var electronics = require('../models/model_electonics')
-var userdb = require('../models/model_user')
+var electronics = require("../models/model_electonics");
+var userdb = require("../models/model_user");
 // var trackdb = require('../model/model_track')
 // var homedb = require('../model/model_home')
 // var teamdb = require('../model/model_team')
@@ -11,18 +11,14 @@ var userdb = require('../models/model_user')
 // var uvtrackdb = require('../model/model_uvtrack')
 // var admindb = require('../model/model_admin')
 //const axios = require("axios");
-const bcrypt = require('bcrypt');
-const jwt = require("jsonwebtoken")
-
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 // Initialize Express app
 // const app = express();
 // app.use(express.json());
 
-
-
 // Scrape Amazon
-
 
 // async function scrapeAmazon(productName) {
 //   const browser = await puppeteer.launch();
@@ -104,7 +100,7 @@ const jwt = require("jsonwebtoken")
 //     await page.goto(`https://www.flipkart.com/search?q=${encodeURIComponent(productName)}`);
 //     // Wait for the search results to load
 //     await page.waitForSelector('._1AtVbE.col-12-12');
-  
+
 //     // Extract phone names, prices, reviews, and product links
 //     const productData = await page.$$eval('._1AtVbE.col-12-12', (elements) => {
 //       return elements.map((el) => {
@@ -118,7 +114,7 @@ const jwt = require("jsonwebtoken")
 //         const link = linkElement ? linkElement.href : '';
 //         const imageElement = el.querySelector('._396cs4');
 //         const image = imageElement ? imageElement.src : '';
-  
+
 //         // Filter out results with empty fields or null values
 //         if (name && price && reviews && link && image) {
 //           return { name, price, reviews, link, image };
@@ -126,7 +122,7 @@ const jwt = require("jsonwebtoken")
 //         return null;
 //       });
 //     });
-  
+
 //     await browser.close();
 //     // Filter and display the scraped data
 //     const filteredData = productData
@@ -139,7 +135,7 @@ const jwt = require("jsonwebtoken")
 //       console.log(filteredData)
 
 //       return filteredData;
-  
+
 //   }
 
 // async function scrapeAmazon(productName, category) {
@@ -244,7 +240,7 @@ const jwt = require("jsonwebtoken")
 // }
 
 function isWordUnique(str) {
-  if(str.length==0) return false;
+  if (str.length == 0) return false;
   const words = str.toLowerCase().split(/\W+/); // Split the string into an array of words
   const wordCount = {};
 
@@ -306,10 +302,16 @@ async function scrapeAmazon(productName, category) {
         const tshirtNameElement = await el.$(selectors.tshirtName);
 
         const company = companyElement
-          ? await page.evaluate((element) => element.textContent, companyElement)
+          ? await page.evaluate(
+              (element) => element.textContent,
+              companyElement
+            )
           : "";
         const tshirtName = tshirtNameElement
-          ? await page.evaluate((element) => element.textContent, tshirtNameElement)
+          ? await page.evaluate(
+              (element) => element.textContent,
+              tshirtNameElement
+            )
           : "";
 
         name = `${company} ${tshirtName}`;
@@ -338,7 +340,7 @@ async function scrapeAmazon(productName, category) {
       const reviews = reviewsElement
         ? await page.evaluate((element) => element.textContent, reviewsElement)
         : "";
-          //console.log(name)
+      //console.log(name)
       // Check if the product name contains the provided search keyword (case-insensitive)
       const keyword = new RegExp(productName, "i");
       if (isWordUnique(name)) {
@@ -367,129 +369,140 @@ async function scrapeAmazon(productName, category) {
 async function scrapeFlipkart(productName, category) {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
-  await page.goto(`https://www.flipkart.com/search?q=${encodeURIComponent(productName)}`);
+  await page.goto(
+    `https://www.flipkart.com/search?q=${encodeURIComponent(productName)}`
+  );
   // Wait for the search results to load
   //console.log("vyom");
-  await page.waitForSelector('._1AtVbE.col-12-12');
+  await page.waitForSelector("._1AtVbE.col-12-12");
 
   // Define category-specific CSS selectors
   const categorySelectors = {
     electronics: {
-      name: '._4rR01T',
-      price: '._30jeq3._1_WHN1',
-      reviews: '._3LWZlK',
-      link: '._1fQZEK',
-      image: '._396cs4'
+      name: "._4rR01T",
+      price: "._30jeq3._1_WHN1",
+      reviews: "._3LWZlK",
+      link: "._1fQZEK",
+      image: "._396cs4",
     },
     fashion: {
-      brand: '._2WkVRV',
-      product: '.IRpwTa',
-      price: '._30jeq3',
-      reviews: '._3LWZlK._3uSWvT',
-      link: '._2UzuFa',
-      image: '._2r_T1I'
-    }
+      brand: "._2WkVRV",
+      product: ".IRpwTa",
+      price: "._30jeq3",
+      reviews: "._3LWZlK._3uSWvT",
+      link: "._2UzuFa",
+      image: "._2r_T1I",
+    },
   };
 
   const selectors = categorySelectors[category];
   //console.log(category,productName);
   // Extract product names, prices, reviews, and links
-  const productData = await page.$$eval('._1AtVbE.col-12-12', (elements, selectors, category) => {
-    return elements.map((el) => {
-      // const nameElement = el.querySelector(selectors.name);
-      // const name = nameElement ? nameElement.textContent : '';
-       let name = '';
-      // console.log(selectors.brand)
-      if (category === "fashion") {
-        const brandElement = el.querySelector(selectors.brand);
-        const productElement = el.querySelector(selectors.product);
-        const brand = brandElement ? brandElement.textContent : '';
-        const product = productElement ? productElement.textContent : '';
-       name = `${brand} ${product}`;
-      } else  {
+  const productData = await page.$$eval(
+    "._1AtVbE.col-12-12",
+    (elements, selectors, category) => {
+      return elements.map((el) => {
+        // const nameElement = el.querySelector(selectors.name);
+        // const name = nameElement ? nameElement.textContent : '';
+        let name = "";
+        // console.log(selectors.brand)
+        if (category === "fashion") {
+          const brandElement = el.querySelector(selectors.brand);
+          const productElement = el.querySelector(selectors.product);
+          const brand = brandElement ? brandElement.textContent : "";
+          const product = productElement ? productElement.textContent : "";
+          name = `${brand} ${product}`;
+        } else {
           const nameElement = el.querySelector(selectors.name);
-          name = nameElement ? nameElement.textContent : '';
-      }
+          name = nameElement ? nameElement.textContent : "";
+        }
 
-      const priceElement = el.querySelector(selectors.price);
-      const price = priceElement ? parseFloat(priceElement.textContent.replace(/[^\d.]/g, '')) : 0;
-      // const reviewsElement = el.querySelector(selectors.reviews);
-      // const reviews = reviewsElement ? reviewsElement.textContent : '';
-      const linkElement = el.querySelector(selectors.link);
-      const link = linkElement ? linkElement.href : '';
-      const imageElement = el.querySelector(selectors.image);
-      const image = imageElement ? imageElement.src : '';
+        const priceElement = el.querySelector(selectors.price);
+        const price = priceElement
+          ? parseFloat(priceElement.textContent.replace(/[^\d.]/g, ""))
+          : 0;
+        // const reviewsElement = el.querySelector(selectors.reviews);
+        // const reviews = reviewsElement ? reviewsElement.textContent : '';
+        const linkElement = el.querySelector(selectors.link);
+        const link = linkElement ? linkElement.href : "";
+        const imageElement = el.querySelector(selectors.image);
+        const image = imageElement ? imageElement.src : "";
 
-      // Filter out results with empty fields or null values
-      if (name && price && link && image) {
-        return { name, price, link, image };
-      }
-      return null;
-    });
-  }, selectors, category);
+        // Filter out results with empty fields or null values
+        if (name && price && link && image) {
+          return { name, price, link, image };
+        }
+        return null;
+      });
+    },
+    selectors,
+    category
+  );
 
   // Extract product names, prices, reviews, and links
 
-
   // Scrape reviews from the product details page
   const productReviews = [];
-for (const product of productData) {
-if (product) {
-  //console.log("vyom");
-  const productPage = await browser.newPage();
-  await productPage.goto(product.link);
-  await productPage.waitForSelector('._1AtVbE.col-12-12');
+  for (const product of productData) {
+    if (product) {
+      //console.log("vyom");
+      const productPage = await browser.newPage();
+      await productPage.goto(product.link);
+      await productPage.waitForSelector("._1AtVbE.col-12-12");
 
-  const reviewElements = await productPage.$$(selectors.reviews);
-  const reviews = [];
-  for (const reviewEl of reviewElements) {
-    const reviewText = await productPage.evaluate(element => element.textContent, reviewEl);
-    reviews.push(reviewText);
+      const reviewElements = await productPage.$$(selectors.reviews);
+      const reviews = [];
+      for (const reviewEl of reviewElements) {
+        const reviewText = await productPage.evaluate(
+          (element) => element.textContent,
+          reviewEl
+        );
+        reviews.push(reviewText);
+      }
+
+      if (reviews && reviews.length > 0) {
+        product.reviews = reviews[0];
+        productReviews.push(product);
+      }
+
+      await productPage.close();
+    }
+    //return productReviews;
   }
 
-  if (reviews && reviews.length > 0) {
-    product.reviews = reviews[0];
-    productReviews.push(product);
-  }
+  // const productReviews = [];
+  // for (const product of productData) {
+  //   if (product) {
+  //     const productPage = await browser.newPage();
+  //     await productPage.goto(product.link);
+  //     await productPage.waitForSelector('._1AtVbE.col-12-12');
 
-  await productPage.close();
-}
-  //return productReviews;
-}
+  //     const reviewElements = await productPage.$$(selectors.reviews);
+  //     let firstReview = null;
+  //     for (const reviewEl of reviewElements) {
+  //       const reviewText = await productPage.evaluate(element => element.textContent.trim(), reviewEl);
+  //       const rating = parseFloat(reviewText.match(/[\d.]+/)); // Extract the first number from the review text
+  //       if (!isNaN(rating)) {
+  //         firstReview = rating;
+  //         break;
+  //       }
+  //     }
 
-// const productReviews = [];
-// for (const product of productData) {
-//   if (product) {
-//     const productPage = await browser.newPage();
-//     await productPage.goto(product.link);
-//     await productPage.waitForSelector('._1AtVbE.col-12-12');
+  //     product.reviews = firstReview !== null ? firstReview.toString() : ''; // Assign the first review rating or an empty string
+  //     productReviews.push(product);
 
-//     const reviewElements = await productPage.$$(selectors.reviews);
-//     let firstReview = null;
-//     for (const reviewEl of reviewElements) {
-//       const reviewText = await productPage.evaluate(element => element.textContent.trim(), reviewEl);
-//       const rating = parseFloat(reviewText.match(/[\d.]+/)); // Extract the first number from the review text
-//       if (!isNaN(rating)) {
-//         firstReview = rating;
-//         break;
-//       }
-//     }
+  //     await productPage.close();
+  //   }
+  // }
 
-//     product.reviews = firstReview !== null ? firstReview.toString() : ''; // Assign the first review rating or an empty string
-//     productReviews.push(product);
-
-//     await productPage.close();
-//   }
-// }
-
-
-await browser.close();
+  await browser.close();
 
   // Filter and display the scraped data
   const filteredData = productReviews
-    .filter((result) => result.reviews.length>0) // Filter out products without reviews
+    .filter((result) => result.reviews.length > 0) // Filter out products without reviews
     .filter((result, index, self) => {
-      const isDuplicate = self.findIndex((r) => r.name === result.name) !== index;
+      const isDuplicate =
+        self.findIndex((r) => r.name === result.name) !== index;
       return !isDuplicate;
     });
 
@@ -499,47 +512,46 @@ await browser.close();
 }
 
 exports.search_electronics = async (req, res) => {
-    try {
-      // Validate request
-      if (!req.body) {
-        return res.status(400).send({ message: "Content can not be empty" });
-      }
-  
-      const { productName, category} = req.body;
-      //console.log(productName);
-      //console.log("shivam");
-      // Check if the productName is provided
-      if (!productName || !category) {
-        //console.log("vyom");
-        return res.status(400).send({ message: "Product name is required" });
-      }
+  try {
+    // Validate request
+    if (!req.body) {
+      return res.status(400).send({ message: "Content can not be empty" });
+    }
+
+    const { productName, category } = req.body;
+    //console.log(productName);
+    //console.log("shivam");
+    // Check if the productName is provided
+    if (!productName || !category) {
+      //console.log("vyom");
+      return res.status(400).send({ message: "Product name is required" });
+    }
 
     const isWhitespace = /^\s*$/.test(productName);
     if (isWhitespace) {
       return res.status(400).send({ message: "Product name is required" });
     }
-      //console.log("kansagara");
-      // Scrape Amazon and Flipkart
-      const amazonResults = await scrapeAmazon(productName,category);
-      const flipkartResults = await scrapeFlipkart(productName,category);
-      
-      // Merge and sort the results by price
-      const results = [...amazonResults, ...flipkartResults].sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
-  
-      // Store the results in the database
-      //await electronics.insertMany(results);
-      if (results.length === 0) {
-        return res.status(200).send({message:"Not found"});
-      }
-      res.status(200).json(results);
+    //console.log("kansagara");
+    // Scrape Amazon and Flipkart
+    const amazonResults = await scrapeAmazon(productName, category);
+    const flipkartResults = await scrapeFlipkart(productName, category);
 
-    } 
-    catch (error) {
-      console.error(error);
-      res.status(500).json({ error: "An error occurred" });
+    // Merge and sort the results by price
+    const results = [...amazonResults, ...flipkartResults].sort(
+      (a, b) => parseFloat(a.price) - parseFloat(b.price)
+    );
+
+    // Store the results in the database
+    //await electronics.insertMany(results);
+    if (results.length === 0) {
+      return res.status(200).send({ message: "Not found" });
     }
-  };
-
+    res.status(200).json(results);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "An error occurred" });
+  }
+};
 
 // exports.search_electronics = async (req, res) => {
 //   try {
@@ -578,65 +590,65 @@ exports.search_electronics = async (req, res) => {
 //   }
 // };
 
-exports.register = async (req,res) => {
+exports.register = async (req, res) => {
   try {
-    if(!req.body){
-      return res.status(400).send({message : "Content cannot be empty"});
+    if (!req.body) {
+      return res.status(400).send({ message: "Content cannot be empty" });
     }
-    const {username , password, email} = req.body;
+    const { username, password, email } = req.body;
 
-    const exist_user = await userdb.findOne({username : username});
-    if(exist_user){
-       return res.status(400).send({message : "Username already exist"});
-    }
-
-    const exist_email = await userdb.findOne({email : email});
-    if(exist_email){
-       return res.status(400).send({message : "Email already exist"});
+    const exist_user = await userdb.findOne({ username: username });
+    if (exist_user) {
+      return res.status(400).send({ message: "Username already exist" });
     }
 
-    const user = new userdb(req.body)
-    await user.save(user)
-    .then(async data=>{res.status(200).send(data)});
+    const exist_email = await userdb.findOne({ email: email });
+    if (exist_email) {
+      return res.status(400).send({ message: "Email already exist" });
+    }
+
+    const user = new userdb(req.body);
+    await user.save(user).then(async (data) => {
+      res.status(200).send(data);
+    });
   } catch (error) {
-    return res.status(500).send({message : "Internal server error"})
+    return res.status(500).send({ message: "Internal server error" });
   }
-}
+};
 
 exports.login = async (req, res) => {
   try {
-      if (!req.body) {
-          return res.status(400).send({ message: "Content can not be empty" });
-      }
+    if (!req.body) {
+      return res.status(400).send({ message: "Content can not be empty" });
+    }
 
-      const {username,password} = req.body
+    const { username, password } = req.body;
 
-      // check if user exists
-      const user = await userdb.findOne({ username: username });
+    // check if user exists
+    const user = await userdb.findOne({ username: username });
 
+    // console.log(username_,password_)
+    if (!user) return res.status(400).send({ message: "User not found" });
 
-      // console.log(username_,password_)
-      if (!user) return res.status(400).send({ message: "User not found" });
+    // check if password is correct
+    const validPassword = await bcrypt.compare(password, user.password);
+    if (!validPassword)
+      return res.status(400).send({ message: "Invalid Password" });
 
-      // check if password is correct
-      const validPassword = await bcrypt.compare(password, user.password);
-      if (!validPassword) return res.status(400).send({ message: "Invalid Password" });
+    // create and assign a token
+    let tokenData = {
+      username: user.username,
+    };
 
-      // create and assign a token
-      let tokenData = {
-          username: user.username
-      };
+    const token = await jwt.sign(tokenData, "secret", { expiresIn: "1h" });
+    //console.log("token created");
 
-      const token = await jwt.sign(tokenData, "secret", { expiresIn: "1h" });
-      //console.log("token created");
-
-      res.status(200).json({
-          status: true,
-          success: "SendData",
-          token: token,
-      })
-
+    res.status(200).json({
+      status: true,
+      success: "SendData",
+      token: token,
+    });
   } catch (err) {
-      return res.status(500).send({ message: "error" });
+    return res.status(500).send({ message: "error" });
   }
-}
+};
