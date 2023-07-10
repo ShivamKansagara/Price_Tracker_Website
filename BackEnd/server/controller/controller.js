@@ -343,7 +343,7 @@ async function scrapeAmazon(productName, category) {
       //console.log(name)
       // Check if the product name contains the provided search keyword (case-insensitive)
       const keyword = new RegExp(productName, "i");
-      if (isWordUnique(name)) {
+      if (isWordUnique(name) && price!==0 && name && price && link && image && reviews) {
         return { name, price, link, image, reviews };
       }
 
@@ -366,6 +366,151 @@ async function scrapeAmazon(productName, category) {
   return filteredData;
 }
 
+// async function scrapeFlipkart(productName, category) {
+//   const n = productName;
+//   const browser = await puppeteer.launch();
+//   const page = await browser.newPage();
+//   await page.goto(
+//     `https://www.flipkart.com/search?q=${encodeURIComponent(productName)}`
+//   );
+//   // Wait for the search results to load
+//   //console.log("vyom");
+//   await page.waitForSelector("._1AtVbE.col-12-12");
+//   // Define category-specific CSS selectors
+//   const categorySelectors = {
+//     electronics: {
+//       name: "._4rR01T",
+//       price: "._30jeq3._1_WHN1",
+//       reviews: "._3LWZlK",
+//       link: "._1fQZEK",
+//       image: "._396cs4",
+//     },
+//     fashion: {
+//       brand: "._2WkVRV",
+//       product: ".IRpwTa",
+//       price: "._30jeq3",
+//       reviews: "._3LWZlK._3uSWvT",
+//       link: "._2UzuFa",
+//       image: "._2r_T1I",
+//     },
+//   };
+
+//   const selectors = categorySelectors[category];
+//   //console.log(category,productName);
+//   // Extract product names, prices, reviews, and links
+//   const productData = await page.$$eval(
+//     "._1AtVbE.col-12-12",
+//     (elements, selectors, category) => {
+//       return elements.map((el) => {
+//         // const nameElement = el.querySelector(selectors.name);
+//         // const name = nameElement ? nameElement.textContent : '';
+//         let name = "";
+//         // console.log(selectors.brand)
+//         if (category === "fashion") {
+//           const brandElement = el.querySelector(selectors.brand);
+//           const productElement = el.querySelector(selectors.product);
+//           const brand = brandElement ? brandElement.textContent : "";
+//           const product = productElement ? productElement.textContent : "";
+//           name = `${brand} ${product}`;
+//         } else {
+//           const nameElement = el.querySelector(selectors.name);
+//           name = nameElement ? nameElement.textContent : "";
+//         }
+
+//         const priceElement = el.querySelector(selectors.price);
+//         const price = priceElement
+//           ? parseFloat(priceElement.textContent.replace(/[^\d.]/g, ""))
+//           : 0;
+//         // const reviewsElement = el.querySelector(selectors.reviews);
+//         // const reviews = reviewsElement ? reviewsElement.textContent : '';
+//         const linkElement = el.querySelector(selectors.link);
+//         const link = linkElement ? linkElement.href : "";
+//         const imageElement = el.querySelector(selectors.image);
+//         const image = imageElement ? imageElement.src : "";
+
+//         // Filter out results with empty fields or null values
+//         if (name && price && link && image ) {
+//           return { name, price, link, image };
+//         }
+//         return null;
+//       });
+//     },
+//     selectors,
+//     category
+//   );
+
+//   // Extract product names, prices, reviews, and links
+
+//   // Scrape reviews from the product details page
+//   const productReviews = [];
+//   for (const product of productData) {
+//     if (product) {
+//       //console.log("vyom");
+//       const productPage = await browser.newPage();
+//       await productPage.goto(product.link);
+//       await productPage.waitForSelector("._1AtVbE.col-12-12");
+
+//       const reviewElements = await productPage.$$(selectors.reviews);
+//       const reviews = [];
+//       for (const reviewEl of reviewElements) {
+//         const reviewText = await productPage.evaluate(
+//           (element) => element.textContent,
+//           reviewEl
+//         );
+//         reviews.push(reviewText);
+//       }
+
+//       if (reviews && reviews.length > 0) {
+//         product.reviews = reviews[0];
+//         productReviews.push(product);
+//       }
+
+//       await productPage.close();
+//     }
+//     //return productReviews;
+//   }
+
+//   // const productReviews = [];
+//   // for (const product of productData) {
+//   //   if (product) {
+//   //     const productPage = await browser.newPage();
+//   //     await productPage.goto(product.link);
+//   //     await productPage.waitForSelector('._1AtVbE.col-12-12');
+
+//   //     const reviewElements = await productPage.$$(selectors.reviews);
+//   //     let firstReview = null;
+//   //     for (const reviewEl of reviewElements) {
+//   //       const reviewText = await productPage.evaluate(element => element.textContent.trim(), reviewEl);
+//   //       const rating = parseFloat(reviewText.match(/[\d.]+/)); // Extract the first number from the review text
+//   //       if (!isNaN(rating)) {
+//   //         firstReview = rating;
+//   //         break;
+//   //       }
+//   //     }
+
+//   //     product.reviews = firstReview !== null ? firstReview.toString() : ''; // Assign the first review rating or an empty string
+//   //     productReviews.push(product);
+
+//   //     await productPage.close();
+//   //   }
+//   // }
+
+//   await browser.close();
+
+//   // Filter and display the scraped data
+//   const filteredData = productReviews
+//     .filter((result) => result.reviews.length > 0) // Filter out products without reviews
+//     .filter((result, index, self) => {
+//       const isDuplicate =
+//         self.findIndex((r) => r.name === result.name) !== index;
+//       return !isDuplicate;
+//     });
+
+//   console.log(filteredData);
+
+//   return filteredData;
+// }
+
 async function scrapeFlipkart(productName, category) {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
@@ -373,123 +518,89 @@ async function scrapeFlipkart(productName, category) {
     `https://www.flipkart.com/search?q=${encodeURIComponent(productName)}`
   );
   // Wait for the search results to load
-  //console.log("vyom");
   await page.waitForSelector("._1AtVbE.col-12-12");
 
   // Define category-specific CSS selectors
   const categorySelectors = {
     electronics: {
+      container: "._1AtVbE.col-12-12",
       name: "._4rR01T",
       price: "._30jeq3._1_WHN1",
-      reviews: "._3LWZlK",
       link: "._1fQZEK",
       image: "._396cs4",
     },
     fashion: {
+      container: "._1AtVbE.col-12-12",
       brand: "._2WkVRV",
       product: ".IRpwTa",
       price: "._30jeq3",
-      reviews: "._3LWZlK._3uSWvT",
       link: "._2UzuFa",
       image: "._2r_T1I",
     },
   };
 
   const selectors = categorySelectors[category];
-  //console.log(category,productName);
-  // Extract product names, prices, reviews, and links
-  const productData = await page.$$eval(
-    "._1AtVbE.col-12-12",
-    (elements, selectors, category) => {
-      return elements.map((el) => {
-        // const nameElement = el.querySelector(selectors.name);
-        // const name = nameElement ? nameElement.textContent : '';
-        let name = "";
-        // console.log(selectors.brand)
-        if (category === "fashion") {
-          const brandElement = el.querySelector(selectors.brand);
-          const productElement = el.querySelector(selectors.product);
-          const brand = brandElement ? brandElement.textContent : "";
-          const product = productElement ? productElement.textContent : "";
-          name = `${brand} ${product}`;
-        } else {
-          const nameElement = el.querySelector(selectors.name);
-          name = nameElement ? nameElement.textContent : "";
-        }
-
-        const priceElement = el.querySelector(selectors.price);
-        const price = priceElement
-          ? parseFloat(priceElement.textContent.replace(/[^\d.]/g, ""))
-          : 0;
-        // const reviewsElement = el.querySelector(selectors.reviews);
-        // const reviews = reviewsElement ? reviewsElement.textContent : '';
-        const linkElement = el.querySelector(selectors.link);
-        const link = linkElement ? linkElement.href : "";
-        const imageElement = el.querySelector(selectors.image);
-        const image = imageElement ? imageElement.src : "";
-
-        // Filter out results with empty fields or null values
-        if (name && price && link && image) {
-          return { name, price, link, image };
-        }
-        return null;
-      });
-    },
-    selectors,
-    category
-  );
 
   // Extract product names, prices, reviews, and links
+  const productData = await page.evaluate((selectors, productName) => {
+    const elements = Array.from(document.querySelectorAll(selectors.container));
+
+    return elements.map((el) => {
+      let name = "";
+      if (selectors.brand) {
+        const brandElement = el.querySelector(selectors.brand);
+        const productElement = el.querySelector(selectors.product);
+        const brand = brandElement ? brandElement.textContent : "";
+        const product = productElement ? productElement.textContent : "";
+        name = `${brand} ${product}`;
+      } else {
+        const nameElement = el.querySelector(selectors.name);
+        name = nameElement ? nameElement.textContent : "";
+      }
+
+      const priceElement = el.querySelector(selectors.price);
+      const price = priceElement
+        ? parseFloat(priceElement.textContent.replace(/[^\d.]/g, ""))
+        : 0;
+
+      const linkElement = el.querySelector(selectors.link);
+      const link = linkElement ? linkElement.href : "";
+      const imageElement = el.querySelector(selectors.image);
+      const image = imageElement ? imageElement.src : "";
+
+      // const queryWords = productName.toLowerCase().split(" ");
+      // const nameWords = name.toLowerCase().split(" ");
+
+      // const matches = queryWords.every((word) => nameWords.includes(word));
+      if (name && price && link && image) {
+        return { name, price, link, image };
+      }
+      return null;
+    });
+  }, selectors, productName);
 
   // Scrape reviews from the product details page
-  const productReviews = [];
-  for (const product of productData) {
-    if (product) {
-      //console.log("vyom");
-      const productPage = await browser.newPage();
-      await productPage.goto(product.link);
-      await productPage.waitForSelector("._1AtVbE.col-12-12");
-
-      const reviewElements = await productPage.$$(selectors.reviews);
-      const reviews = [];
-      for (const reviewEl of reviewElements) {
-        const reviewText = await productPage.evaluate(
-          (element) => element.textContent,
-          reviewEl
-        );
-        reviews.push(reviewText);
-      }
-
-      if (reviews && reviews.length > 0) {
-        product.reviews = reviews[0];
-        productReviews.push(product);
-      }
-
-      await productPage.close();
-    }
-    //return productReviews;
-  }
-
   // const productReviews = [];
   // for (const product of productData) {
   //   if (product) {
   //     const productPage = await browser.newPage();
   //     await productPage.goto(product.link);
-  //     await productPage.waitForSelector('._1AtVbE.col-12-12');
+  //     await productPage.waitForSelector("._1AtVbE.col-12-12");
 
   //     const reviewElements = await productPage.$$(selectors.reviews);
-  //     let firstReview = null;
+  //     const reviews = [];
   //     for (const reviewEl of reviewElements) {
-  //       const reviewText = await productPage.evaluate(element => element.textContent.trim(), reviewEl);
-  //       const rating = parseFloat(reviewText.match(/[\d.]+/)); // Extract the first number from the review text
-  //       if (!isNaN(rating)) {
-  //         firstReview = rating;
-  //         break;
-  //       }
+  //       const reviewText = await productPage.evaluate(
+  //         (element) => element.textContent,
+  //         reviewEl
+  //       );
+  //       reviews.push(reviewText);
   //     }
 
-  //     product.reviews = firstReview !== null ? firstReview.toString() : ''; // Assign the first review rating or an empty string
-  //     productReviews.push(product);
+  //     if (reviews && reviews.length > 0) {
+  //       product.reviews = reviews[0];
+  //       productReviews.push(product);
+  //     }
 
   //     await productPage.close();
   //   }
@@ -498,8 +609,8 @@ async function scrapeFlipkart(productName, category) {
   await browser.close();
 
   // Filter and display the scraped data
-  const filteredData = productReviews
-    .filter((result) => result.reviews.length > 0) // Filter out products without reviews
+  const filteredData = productData
+    .filter((result) => result!==null) // Filter out products without reviews
     .filter((result, index, self) => {
       const isDuplicate =
         self.findIndex((r) => r.name === result.name) !== index;
@@ -510,6 +621,7 @@ async function scrapeFlipkart(productName, category) {
 
   return filteredData;
 }
+
 
 exports.search_electronics = async (req, res) => {
   try {

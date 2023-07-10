@@ -94,7 +94,7 @@ export default function ShowCard() {
                         <img src={review_logo} alt="clock" className="small-image" />
                         </div>
                         <div>
-                        <p style={{color:"white"}}>{product.reviews.toString().substring(0, 3) + "/5"}</p>
+                        <p style={{color:"white"}}>{product.reviews ?  product.reviews.toString().substring(0, 3) + "/5" :"0/5"}</p>
                         </div>
                       </div>
                     </div>
